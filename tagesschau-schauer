@@ -1,0 +1,33 @@
+#!/bin/bash
+cache_dir=~/.cache/tagesschau-schauer
+mkdir -p $cache_dir
+
+# download articles and quit when curls fails
+echo "download articles"
+curl "https://www.tagesschau.de/api2/news/" > $cache_dir/unprocessed.json \
+	|| { echo "cant connect to tagesschau"; exit 1; }
+
+# only get title and text from articles 
+echo "parse articles"
+jq ".news[] | {title: .title, text: .firstSentence}" $cache_dir/unprocessed.json \
+	> $cache_dir/new-articles.json
+
+# check if old articles exist
+echo "check for cached articles"
+test -f $cache_dir/articles.json \
+	|| { mv $cache_dir/{new-,}articles.json; echo "no old articles exist"; exit 1; }
+
+# check which articles are new
+echo "compare cache with new articles"
+echo "{}" \
+	| jq -r \
+		--slurpfile new $cache_dir/new-articles.json \
+		--slurpfile old $cache_dir/articles.json \
+		'$new - $old 
+			| .[] 
+			| "notify-send \"\(.title)\" \"\(.text)\""'  \
+	| bash
+
+# update last articles
+echo "replace cache" 
+mv $cache_dir/{new-,}articles.json

@@ -1,0 +1,8 @@
+[Unit]
+Description=Sends notification from Tagesschau news feed
+Wants=tagesschau-schauer.timer
+
+[Service]
+ExecStart=$HOME/.local/bin/tagesschau-schauer
+
+
