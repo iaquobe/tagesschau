@@ -6,4 +6,5 @@ cp ./tagesschau-schauer.service ~/.local/share/systemd/user/
 
 envsubst < ./tagesschau-schauer.service > ~/.local/share/systemd/user/tagesschau-schauer.service
 cp ./tagesschau-schauer.timer ~/.local/share/systemd/user/
+systemctl --user daemon-reload
 

@@ -1,15 +1,17 @@
 #!/bin/bash
 cache_dir=~/.cache/tagesschau-schauer
+api_url="https://www.tagesschau.de/api2/news/" 
+restriction="select(.ressort) | select(.ressort | test(\"inland|ausland|wirtschaft\"))"
 mkdir -p $cache_dir
 
 # download articles and quit when curls fails
 echo "download articles"
-curl "https://www.tagesschau.de/api2/news/" > $cache_dir/unprocessed.json \
+curl $api_url > $cache_dir/unprocessed.json \
 	|| { echo "cant connect to tagesschau"; exit 1; }
 
 # only get title and text from articles 
 echo "parse articles"
-jq ".news[] | {title: .title, text: .firstSentence}" $cache_dir/unprocessed.json \
+jq ".news[] | $restriction | {title: .title, text: .firstSentence, ressort: .ressort}" $cache_dir/unprocessed.json \
 	> $cache_dir/new-articles.json
 
 # check if old articles exist
