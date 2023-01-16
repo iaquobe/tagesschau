@@ -2,7 +2,7 @@
 Description=Sends notification from Tagesschau news feed
 
 [Timer]
-OnUnitActiveSec=10m
+OnUnitActiveSec=5m
 
 [Install]
 WantedBy=timers.target
